@@ -1,84 +1,89 @@
-# Startup Benefits Platform (Stirring Minds Assignment)
+# Startup Benefits & Partnerships Platform
 
-## 👋 Project Overview
-This is a full-stack web application designed to help startups access exclusive benefits and deals. I built this platform with a focus on a **premium user experience**, ensuring that the interface feels modern, responsive, and trustworthy—essential qualities for any B2B product.
+A premium, full-stack benefits platform for startups. Built with Next.js 14, Node.js, and TypeScript.
 
-The core functionality revolves around a "tiered access" system where verified startups get access to premium deals (like AWS credits), while unverified users can only see public offers.
+## 🌟 Key Features
+- **Premium UI**: Dark-mode aesthetic with glassmorphism and Framer Motion animations.
+- **Role-Based Access**: "Locked" deals are only claimable by verified accounts.
+- **Secure Claims**: Middleware validates deal eligibility and prevents duplicate claims.
+- **REST API**: Fully typed and structured Node/Express backend.
 
-## 🛠️ Tech Stack & Design Decisions
-I chose a decoupled architecture to ensure scalability and clean separation of concerns:
+## 🏗️ Architecture
+- **Frontend**: Next.js (App Router), Tailwind CSS, Framer Motion, Axios.
+- **Backend**: Express.js, MongoDB (Mongoose), JWT Auth.
+- **Database**: MongoDB.
 
-- **Frontend**: **Next.js 14** (App Router). I really enjoy the performance benefits of Server Components, but I used Client Components for the interactive parts like the dashboard and authentication flow.
-- **Styling**: **Tailwind CSS**. It allowed me to rapidly build a custom "Dark Mode" aesthetic without fighting with specificity issues. I used deep slate colors to give it that "SaaS" vibe.
-- **Backend**: **Node.js & Express**. I went with a solid, typed Express server to handle the API logic. It's robust and handles the JWT authentication middleware perfectly.
-- **Database**: **MongoDB**. Since deal structures can vary, a document store was the flexible choice here.
-- **State Management**: React Context API for managing the user's auth session globally.
+## 🚀 Getting Started
 
-## ✨ Key Features I Implemented
-1.  **Authentication System**: A complete JWT-based auth flow. You can register, login, and the session persists securely.
-2.  **Smart Deal Locking**: This was the most interesting part to build. The system checks if a user is `verified` before returning the claim instructions for premium deals. If you aren't verified, you get a "Locked" UI state.
-3.  **Visual Polish**: I authenticated the "claim" action with a confetti pop (using `canvas-confetti`) because positive reinforcement is great for UX!
-4.  **Responsive Design**: The grid layouts for the deals adapt smoothly from mobile to desktop.
+### Prerequisites
+- Node.js (v18+)
+- MongoDB (running locally on port 27017)
 
----
-
-## 💻 How to Run This Project Locally
-
-I've set up everything to be pretty plug-and-play. Here is how you can get it up and running on your machine.
-
-### 1. Prerequisites
-Make sure you have Node.js installed.
-*Note: I verified this project using MongoDB Atlas (cloud), but the config is set up to easily switch between local or cloud mongo via the `.env` file.*
-
-### 2. Setting up the Backend
-Navigate to the server folder and install dependencies:
+### 1. Setup Backend
 ```bash
 cd server
 npm install
 ```
 
-**Database Seeding**:
-I wrote a seed script to populate the database with some sample data (AWS, Notion, HubSpot, etc.) so you don't have to enter them manually.
+**Configuration**:
+A `.env` file is already created for you in `server/`:
+```env
+MONGO_URI=mongodb://localhost:27017/startup-benefits
+JWT_SECRET=supersecretkey_change_this_in_production
+PORT=5000
+```
+
+**Seed Database (Important!)**:
+Populate the database with initial deals (AWS, Notion, etc.):
 ```bash
 npm run seed
 ```
+*Note: This will clear existing deals and insert fresh ones.*
 
-**Run the Server**:
+**Start Server**:
 ```bash
 npm run dev
 ```
-The server will start listening on port `5000`.
+Server runs at `http://localhost:5000`.
 
-### 3. Setting up the Frontend
-Open a new terminal tab, navigate to the client folder, and start the Next.js app:
+### 2. Setup Frontend
+Open a new terminal:
 ```bash
 cd client
 npm install
 npm run dev
 ```
-The application will be live at `http://localhost:3000`.
+Client runs at `http://localhost:3000`.
 
----
+## 🧪 How to Test
 
-## 🧪 Testing the "Locked" Feature
+1. **Register**: Go to `http://localhost:3000/register` and create an account.
+   - You will be **Unverified** by default.
+2. **Browse Deals**: Go to `/deals`. You will see locked and unlocked deals.
+   - Try viewing "Stripe Atlas" (Unlocked) -> You can claim it.
+   - Try viewing "AWS Activate" (Locked) -> You will see a "Verification Required" message.
+3. **Verify User (Manual)**:
+   - Since there is no Admin UI, you can manually verify a user by connecting to MongoDB:
+   - `db.users.updateOne({ email: "your@email.com" }, { $set: { isVerified: true } })`
+   - Log out and Log back in to refresh your token claims.
+   - Now you can claim the Locked deals!
 
-Since I haven't built a full Admin Panel UI yet, I created a simple CLI script to verify users (simulating an admin approval).
+## 📂 Project Structure
+```
+/client          # Next.js Frontend
+  /src/app       # App Router Pages
+  /src/components # UI Components (Button, Navbar, DealCard)
+  /src/context   # AuthContext (Global State)
+  /src/lib       # Utils & API Client
 
-1.  **Register** a new user on the frontend (you'll start as 'Unverified').
-2.  **Check a deal**: Try to click on "AWS Activate". You'll see it's locked.
-3.  **Verify yourself**:
-    Switch to your server terminal and run this custom script I added:
-    ```bash
-    npm run verify your-email@example.com
-    ```
-4.  **Refresh**: Go back to the dashboard, and you should see the "Verified Startup" badge. The AWS deal is now unlocked!
+/server          # Express Backend
+  /src/models    # Mongoose Models (User, Deal, Claim)
+  /src/routes    # API Routes
+  /src/controllers # Business Logic
+```
 
----
+## ⚠️ Notes
+- The app uses a local MongoDB instance. Ensure `mongod` is running.
+- Verification logic is simulated via the database flag `isVerified`.
 
-## � Future Improvements
-If I had more time, here is what I would add next:
-- **Admin Dashboard**: A UI for admins to approve/reject startup applications.
-- **Email Notifications**: Integration with Resend or SendGrid to notify users when they claim a deal.
-- **Company Profile**: A deeper profile page where startups can upload their pitch decks.
-
-Enjoy checking out the code! Let me know if you have any questions.
+ 
